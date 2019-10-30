@@ -1,0 +1,110 @@
+<html> 
+<head>
+    <title>HTTP模拟请求</title>
+    <#include "/common/_header.html"/>
+    <script type="text/javascript">
+                
+        $(document).ready(function(){
+
+        	var objects = {};
+                        
+            $('#sendBtn').click(function(){
+                $('#sendBtn').attr('disabled',true);
+                document.getElementById('respxml').value = '';
+                var msgReq = document.getElementById('reqxml').value;
+                if (msgReq == null || msgReq == '') {
+                    alert("请求内容不能为空");
+                    return;
+                }
+                var esbEnv = $('#esbEnv').val();
+                var concurrency = $('#concurrency').val();
+                var reg = new RegExp("[0-9]");
+                if(!reg.test(concurrency)){
+                    alert("并发数只能为输入数字...");
+                    $('#concurrency').focus();
+                    return;
+                }
+                var input_params = 'msgReq=' + msgReq + '&esbEnv=' + esbEnv + '&concurrency=' + concurrency;
+                $.ajax({
+                   type: "POST",
+                   url: "sendMsg",
+                   //dataType: "json",
+                   data: input_params,
+                   success: function(data){
+                        var errCode = data.errCode;
+                        if(errCode != null && errCode != '000000'){
+                            alert(data.errMsg);
+                            return;
+                        }
+                        document.getElementById('respxml').value = data.respMsg;
+                        $('#cost').val(data.cost);
+                        $('#sendBtn').attr('disabled',false);
+                        appendLogByMsg(data.msg);
+                   },
+                   error: function (XMLHttpRequest, textStatus, errorThrown) {
+                	   $('#sendBtn').attr('disabled',false);
+                        this; 
+                    }
+                });
+            })
+
+            $('#clearTextBtn').click(function(){
+                document.getElementById('reqxml').value = '';
+                document.getElementById('respxml').value = '';
+            })
+            
+            $('#showlogBtn').click(function(){
+                $('#myModal').modal('show');
+            })
+
+        }) 
+        
+    </script>
+</head>
+<body>
+
+<div class="msg-input jumbotron" style="width: 5%; height: 95%;float:left">
+</div>  
+    
+<div class="msg-input jumbotron" style="width: 35%; height: 95%; marign-top:100px;padding-top:20px;float:left">
+    <textarea rows="45" cols="70" name="reqxml" id="reqxml" class="textarea-msg"></textarea>
+</div>
+
+<div class="msg-input jumbotron" style="width: 4%;float:left">
+    <br />
+    <br />
+    <br />
+    <input type="button" id="sendBtn" class="btn btn-lg btn-primary" title="发送" value="发送"/>
+
+    <br />
+    <br />
+    <br />
+    <input type="button" id="clearTextBtn" class="btn btn-lg"  title="清空" value="清空"/>
+    <br />
+    <br />
+    <br />
+    <input type="button" id="showlogBtn" class="btn btn-lg btn-block"  title="查看日志" value="日志"/>
+</div>
+<div class="msg-input jumbotron" style="width: 35%; height: 95%; padding-top:20px;float:left">
+    <textarea rows="45" cols="70" id="respxml" name="code" class="textarea-msg"></textarea>
+</div>
+<div class="jumbotron" style="width:20%;height: 90%;float:left">
+    <div class="input-group">
+        <span class="input-group-addon">模拟参数</span>
+        <select id="esbEnv" class="form-control" onchange="changesys(this)">
+        	<option value="socket1" selected="selected">模拟社保发起</option>
+            <option value="socket2">模拟中间业务发起</option>
+        </select>
+    </div>
+    <div class="input-group">
+          <span class="input-group-addon">并发数</span>
+          <input type="text" id="concurrency" class="form-control" value="1" />
+    </div>
+    <div class="input-group">
+          <span class="input-group-addon">平均耗时(ms)</span>
+          <input type="text" id="cost" class="form-control" />
+    </div>
+  
+</div>  
+<#include "/common/_modal.html"/>
+</body>

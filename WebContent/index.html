@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head>
+    <title>运维中心</title>
+    <#include "/common/_header.html"/>
+    <script type="text/javascript">
+        $(document).ready(function(){  
+        	$('#myTabs a').click(function (e) {
+       			e.preventDefault();
+       			$(this).tab('show');
+       		})
+        })  
+        
+    </script>
+</head>
+<body>
+
+<!-- Nav tabs -->
+<nav class="navbar navbar-default navbar-fixed-top">
+<div class="container" style="">
+    <div id="myTabs" class="navbar-collapse collapse">
+		<ul class="nav navbar-nav nav-tabs" role="tablist">
+		<#list tabs as tab>
+		<li role="presentation" class="<#if tab.id == firstTabId>active</#if>"><a href="${'#menu_id' + tab.id}" aria-controls="${'menu_id' + tab.id}" role="tab" data-toggle="tab">${tab.name}</a></li>
+         </#list>
+		</ul>
+	</div>
+</div>
+ </nav>
+ <br/>    
+<div class="container" style="width: 95%;">
+    <div class="col-xs-1">    
+    </div>
+    <div class="col-xs-10">
+      
+    
+    <br />
+    <!-- Tab panes -->
+	  <div class="tab-content">
+	  	<#list tabs as tab>
+	    <#if tab.id == firstTabId>
+	    <div role="tabpanel" class="tab-pane fade in active" id="${'menu_id' + tab.id}">
+	    <#include "${tab.filePath}"/>
+	    </div>
+	    <#else>
+	    <div role="tabpanel" class="tab-pane" id="${'menu_id' + tab.id}">
+	    <#include "${tab.filePath}"/>
+	    </div>
+	    </#if>
+	    </#list>
+	  </div>
+    </div>
+    <div class="col-xs-1">
+
+    </div>
+</div>
+<#include "/common/_footer.html"/>
+</body>
