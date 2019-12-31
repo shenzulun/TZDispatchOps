@@ -84,12 +84,13 @@ $(document).ready(function() {
                    "defaultContent": "" 
                },
                { "data": "id" },
-               { "data": "trans_no" },
-               { "data": "serno" },
-               { "data": "sender" },
-               { "data": "recever" },
-               { "data": "error_code" },
-               { "data": "error_info" },
+               { "data": "cust_no" },
+               { "data": "cust_name" },
+               { "data": "trans_code" },
+               { "data": "request_serno" },
+               { "data": "response_serno" },
+               { "data": "status" },
+               { "data": "err_msg" },
                { "data": "create_time" }
            ],
            columnDefs: [ 
@@ -133,9 +134,9 @@ $(document).ready(function() {
 });
 
 function format (d) {
-	var req = d.request_msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+	var req = d.request_msg_f.replace(/</g,'&lt;').replace(/>/g,'&gt;');
 	//var req = d.request_msg;
-	var resp = d.response_msg.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+	var resp = d.response_msg_f.replace(/</g,'&lt;').replace(/>/g,'&gt;');
 	//var resp = d.response_msg;
     return  "<table border='1'><thead><th>请求报文</th><th>返回报文</th></thead>" + 
     		"<tbody><tr>" + 
@@ -147,13 +148,14 @@ function format (d) {
 var orderArr = {
 	0 : 'id',
 	1 : 'id',
-	2 : 'trans_no',
-	3 : 'serno',
-	4 : 'sender',
-	5 : 'recever',
-	6 : 'error_code',
-	7 : 'error_info',
-	8 : 'create_time',
+	2 : 'cust_no',
+	3 : 'cust_name',
+	4 : 'trans_code',
+	5 : 'request_serno',
+	6 : 'response_serno',
+	7 : 'status',
+	8 : 'err_msg',
+	9 : 'create_time',
 }
 
 function getRequestParams(data){
@@ -184,10 +186,11 @@ function getRequestParams(data){
         <tr>
         	<th></th>
             <th>主键</th>
+            <th>客户号</th>	
+            <th>客户名称</th>	
             <th>交易码</th>
-            <th>流水号</th>
-            <th>发送者</th>
-            <th>接收者</th>
+            <th>请求流水号</th>
+            <th>返回流水号</th>
             <th>返回代码</th>
             <th>返回信息</th>
             <th>创建日期</th>

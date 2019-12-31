@@ -5,6 +5,8 @@
 package com.tzrcb.dispatch.ops.util;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -14,6 +16,12 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tzrcb.dispatch.config.ConstantConfig;
@@ -23,7 +31,9 @@ import com.tzrcb.dispatch.ops.dto.MsgDTO;
 import com.tzrcb.dispatch.ops.dto.ServerStatusDTO;
 import com.tzrcb.dispatch.protocol.MessageRequest;
 import com.tzrcb.dispatch.protocol.MessageResponse;
-import com.tzrcb.dispatch.util.XmlUtils;
+
+import me.belucky.easytool.util.StringUtils;
+import me.belucky.easytool.util.XmlUtils;
 
 /**
  * Description: 运维工具类
@@ -57,8 +67,8 @@ public class OpsUtils {
 		List<ServerStatusDTO> list = new ArrayList<ServerStatusDTO>();
 		int port1 = ConstantConfig.remoteServerConfig1.getPort();		
 		list.add(checkServerStatus(ConstantConfig.remoteServerConfig1.getHost(), port1));
-		int port2 = ConstantConfig.remoteServerConfig2.getPort();
-		list.add(checkServerStatus(ConstantConfig.remoteServerConfig2.getHost(), port2));
+//		int port2 = ConstantConfig.remoteServerConfig2.getPort();
+//		list.add(checkServerStatus(ConstantConfig.remoteServerConfig2.getHost(), port2));
 		return list;
 	}
 	
@@ -189,5 +199,43 @@ public class OpsUtils {
 			msgDTO.setCost(cost / threads);
 		}
 		return msgDTO;
+	}
+	
+	/**
+	 * 格式化XML
+	 * @param input
+	 * @param cls
+	 * @return
+	 */
+	public static String formatXml(String input, String encode) {
+		if(StringUtils.isNull(input)) {
+			return null;
+		}
+		String result = null;
+		SAXReader reader = new SAXReader();
+        // System.out.println(reader);
+        // 注释：创建一个串的字符输入流
+        StringReader in = new StringReader(input);
+        Document doc;
+		try {
+			doc = reader.read(in);
+			// 注释：创建输出格式
+	        OutputFormat formater = OutputFormat.createPrettyPrint();
+	        // 注释：设置xml的输出编码
+	        formater.setEncoding(encode);
+	        // 注释：创建输出(目标)
+	        StringWriter out = new StringWriter();
+	        // 注释：创建输出流
+	        XMLWriter writer = new XMLWriter(out, formater);
+	        // 注释：输出格式化的串到目标中，执行后。格式化后的串保存在out中。
+	        writer.write(doc);
+	        writer.close();
+	        result = out.toString();
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

@@ -5,16 +5,18 @@
 package com.tzrcb.dispatch.ops.controller;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.jfinal.aop.Inject;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Page;
 import com.tzrcb.dispatch.dto.CommonSearchDTO;
-import com.tzrcb.dispatch.model.table.TransRecord;
+import com.tzrcb.dispatch.model.table.YqzlRecord;
 import com.tzrcb.dispatch.ops.dto.MenuDTO;
 import com.tzrcb.dispatch.ops.dto.MsgDTO;
 import com.tzrcb.dispatch.ops.dto.ServerStatusDTO;
+import com.tzrcb.dispatch.ops.service.YqzlRecordService;
 import com.tzrcb.dispatch.ops.util.OpsUtils;
-import com.tzrcb.dispatch.service.TransRecordService;
 
 /**
  * Description: 首页控制器
@@ -23,9 +25,10 @@ import com.tzrcb.dispatch.service.TransRecordService;
  * @version 1.0
  */
 public class IndexController extends Controller{
+	protected static Logger log = LoggerFactory.getLogger(IndexController.class);
 	
 	@Inject
-	TransRecordService transRecordService;
+	YqzlRecordService yqzlRecordService;
 	/**
 	 * 首页
 	 */
@@ -43,7 +46,7 @@ public class IndexController extends Controller{
 	 */
 	public void listTransRecord() {
 		CommonSearchDTO searchDTO = getBean(CommonSearchDTO.class,"");
-		Page<TransRecord> page = transRecordService.paginate(searchDTO);
+		Page<YqzlRecord> page = yqzlRecordService.paginate(searchDTO);
 		renderJson(page); 
 	}
 	
@@ -69,6 +72,15 @@ public class IndexController extends Controller{
 	
 	public void http(){
 		render("esbSend.html");
+	}
+	
+	/**
+	 * 银企直连服务的模拟接口
+	 */
+	public void yqzl() {
+		String transData = getPara("transData");
+		log.info(transData);
+		renderText("success!!!");
 	}
 
 }

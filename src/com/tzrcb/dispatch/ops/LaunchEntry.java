@@ -16,12 +16,15 @@ import com.jfinal.core.JFinal;
 import com.jfinal.kit.Prop;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
+import com.jfinal.plugin.activerecord.dialect.Sqlite3Dialect;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.render.ViewType;
 import com.jfinal.template.Engine;
 import com.tzrcb.dispatch.ops.controller.IndexController;
+import com.tzrcb.dispatch.config.JdbcConfig;
 import com.tzrcb.dispatch.model.table._MappingKit;
 import com.tzrcb.dispatch.util.CommonUtils;
+import com.tzrcb.dispatch.util.PropUtils;
 
 
 /**
@@ -83,21 +86,29 @@ public class LaunchEntry extends JFinalConfig{
 	 * 配置插件
 	 */
 	public void configPlugin(Plugins me) {
+		//默认数据源
 		DruidPlugin druid = createDruidPlugin(); 
 		me.add(druid);
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(druid);
 		arp.setShowSql(prop.getBoolean("showSql", false));
+		arp.setDialect(new Sqlite3Dialect());
 		_MappingKit.mapping(arp);
 		me.add(arp);
 	}
 	
 	public static DruidPlugin createDruidPlugin() {	
+		return createDruidPlugin("default");
+	}
+	
+	/**
+	 * 根据数据源名称创建Druid数据源
+	 * @param dataSourceName
+	 * @return
+	 */
+	public static DruidPlugin createDruidPlugin(String dataSourceName) {	
 		loadConfig();
-		String url = prop.get("jdbc-url");
-		String driverClass = prop.get("jdbc-driverClass");
-		String username = prop.get("jdbc-user");
-		String password = prop.get("jdbc-password");
-		DruidPlugin druid = new DruidPlugin(url, username, password,driverClass); 
+		JdbcConfig conf = PropUtils.getConfig(dataSourceName, "jdbc-config.properties", JdbcConfig.class);
+		DruidPlugin druid = new DruidPlugin(conf.getUrl(), conf.getUsername(), conf.getPassword(), conf.getDriverClass()); 
 		return druid;
 	}
 	
