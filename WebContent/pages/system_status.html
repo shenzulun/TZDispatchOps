@@ -10,11 +10,6 @@
 				   $('#system-status tbody').empty();			
 				   var arr = data;			   
 				   for(var i=0;i<arr.length;i++){
-					   var status = arr[i].status;
-					   var statusStr = '运行正常';
-					   if(status != 1){
-						   statusStr = '未启用';
-					   }
 					   var content = "<tr><td>" 
 						   		+ (i+1) 
 						   		+ "</td><td>"
@@ -22,7 +17,7 @@
 					   			+"</td><td>"
 					   			+ arr[i].port
 					   			+"</td><td>"
-					   			+ statusStr
+					   			+ arr[i].statusStr
 					   			+"</td><td>"	
 					   			+ arr[i].output
 					   			+"</td></tr>";				   			
@@ -60,7 +55,7 @@
             <td>${server_index + 1}</td>
             <td>${server.host}</td>
             <td>${server.port}</td>
-            <td>${(server.status == 1) ? string('运行正常','未启用')}</td>
+            <td>${server.statusStr}</td>
             <td>${server.output}</td>
         </tr>
        </#list>    

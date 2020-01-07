@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	省联社银企直联接口定义
+	通信协议：HTTP
+ -->
+<root>
+	<config>
+		<url>http://192.168.118.1:9999</url>  <!-- 已调整为从t_yqzl_account_config中获取，对应bce_url -->
+		<method>POST</method>
+		<headers>
+		    <!-- 请求头 -->  
+			<header key="Content-type">application/x-www-form-urlencoded</header>
+			<header key="User-Agent">Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36</header>
+		</headers>
+		<encode>UTF-8</encode>
+		<!-- 连接超时时间   单位：ms -->
+        <connectTimeout>30000</connectTimeout>
+        <!-- 读取超时时间   单位：ms -->
+        <readTimeout>30000</readTimeout>
+        <!-- 是否支持超时重发 -->
+        <retryOnTimedout>1</retryOnTimedout>       
+        
+		<!-- 批量转账接口的单个请求最大笔数 -->
+		<batchMaxSize>500</batchMaxSize>
+		<!-- 前置机地址 -->
+		<forword-url>http://192.168.118.1:7071/bce/yq.do</forword-url>  <!-- 已调整为从t_yqzl_account_config中获取，对应ssl_url -->
+		
+	</config>
+	
+</root>

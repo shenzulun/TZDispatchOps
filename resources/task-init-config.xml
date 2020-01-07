@@ -23,4 +23,6 @@
  	
  	<task id="SocketServerForSSTask" title="Socket服务端任务-提供给社保" />
  	
+ 	<task id="YqzlConfigInitTask" title="银企直连服务配置初始化任务" />
+ 	
 </tasks>

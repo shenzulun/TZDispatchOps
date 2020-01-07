@@ -22,6 +22,8 @@ public class ServerStatusDTO implements IBean{
 	
 	private String output;
 	
+	private String statusStr;
+	
 	public ServerStatusDTO() {};
 	
 	public ServerStatusDTO(String host, int port, int status, String output) {
@@ -70,5 +72,12 @@ public class ServerStatusDTO implements IBean{
 	public void setOutput(String output) {
 		this.output = output;
 	}
-	
+
+	public String getStatusStr() {
+		return statusStr;
+	}
+
+	public void setStatusStr(String statusStr) {
+		this.statusStr = statusStr;
+	}
 }

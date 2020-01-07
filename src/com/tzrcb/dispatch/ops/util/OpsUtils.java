@@ -26,12 +26,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tzrcb.dispatch.config.ConstantConfig;
 import com.tzrcb.dispatch.core.client.SocketClientFactory;
+import com.tzrcb.dispatch.core.http.HTTPResponseDTO;
+import com.tzrcb.dispatch.core.http.qyzl.YqzlSenderFactory;
+import com.tzrcb.dispatch.model.api.yqzl.YqzlReqHeader;
+import com.tzrcb.dispatch.model.api.yqzl._100003._100003_RequestBody;
+import com.tzrcb.dispatch.model.api.yqzl._100003._100003_RequestDocument;
+import com.tzrcb.dispatch.model.api.yqzl._100003._100003_ResponseDocument;
 import com.tzrcb.dispatch.ops.dto.MenuDTO;
 import com.tzrcb.dispatch.ops.dto.MsgDTO;
 import com.tzrcb.dispatch.ops.dto.ServerStatusDTO;
 import com.tzrcb.dispatch.protocol.MessageRequest;
 import com.tzrcb.dispatch.protocol.MessageResponse;
+import com.tzrcb.dispatch.util.CommonUtils;
 
+import me.belucky.easytool.ftp.FTPConfig;
+import me.belucky.easytool.ftp.SFTPTools;
+import me.belucky.easytool.util.DateTimeUtils;
 import me.belucky.easytool.util.StringUtils;
 import me.belucky.easytool.util.XmlUtils;
 
@@ -52,8 +62,8 @@ public class OpsUtils {
 	 */
 	public static List<MenuDTO> getMenus() {
 		List<MenuDTO> menus = new ArrayList<MenuDTO>();
-		menus.add(new MenuDTO(0, "交易记录", "/pages/trans_record.html"));
-		menus.add(new MenuDTO(1, "日志查看", "/pages/logs_center.html"));
+		menus.add(new MenuDTO(0, "医保报文-交易记录", "/pages/trans_record.html"));
+		menus.add(new MenuDTO(1, "银企直联-交易记录", "/pages/yqzl_trans_record.html"));
 		menus.add(new MenuDTO(2, "系统状态", "/pages/system_status.html"));
 //		menus.add(new MenuDTO(3, "模拟报文", "/pages/send_msg.html"));
 		return menus;
@@ -69,6 +79,9 @@ public class OpsUtils {
 		list.add(checkServerStatus(ConstantConfig.remoteServerConfig1.getHost(), port1));
 //		int port2 = ConstantConfig.remoteServerConfig2.getPort();
 //		list.add(checkServerStatus(ConstantConfig.remoteServerConfig2.getHost(), port2));
+		
+		list.add(checkYqzl());
+		list.add(checkSFTP());
 		return list;
 	}
 	
@@ -100,6 +113,7 @@ public class OpsUtils {
 			}
 		}
 		ServerStatusDTO serverStatusDTO = new ServerStatusDTO(host, port, status, output);
+		serverStatusDTO.setStatusStr(status == 1 ? "运行正常" : "未启用");
 		return serverStatusDTO;
 	}
 	
@@ -237,5 +251,71 @@ public class OpsUtils {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	/**
+	 * 检查银企直联的连接状态
+	 * @return
+	 */
+	public static ServerStatusDTO checkYqzl() {
+		ServerStatusDTO serverStatusDTO = new ServerStatusDTO();
+		serverStatusDTO.setHost("115.236.91.210");
+		serverStatusDTO.setPort(24433);
+		boolean isSuccess = false;
+		_100003_RequestDocument doc = new _100003_RequestDocument();
+		
+		YqzlReqHeader header = new YqzlReqHeader();
+		header.setCustNo("2000002557");  
+		header.setReqDate(DateTimeUtils.getToday());
+		header.setReqTime(DateTimeUtils.getNowTime() + "001");
+		String serno = CommonUtils.generateSerno();
+		header.setSerialNo(serno);
+		header.setTranCode("100003");
+		header.setUserId("000000");
+		doc.setHeader(header);
+		
+		_100003_RequestBody body = new _100003_RequestBody();
+		body.setAccountNo("201000190354763");
+		doc.setBody(body);
+		
+		//3. 发送请求报文
+		String reqXml = XmlUtils.convertObjectToXml(doc, false);
+		try {
+			HTTPResponseDTO<_100003_ResponseDocument> respDTO = YqzlSenderFactory.send(reqXml, _100003_ResponseDocument.class);
+			serverStatusDTO.setStatus(respDTO.getStatusCode());
+			if(respDTO.isSuccess()) {
+				serverStatusDTO.setOutput(respDTO.getData().getHeader().getErrMsg());
+				isSuccess = true;
+			}else {
+				serverStatusDTO.setOutput("银企直联连接失败");
+			}
+		} catch (Exception e) {
+			serverStatusDTO.setStatus(-1);
+			serverStatusDTO.setOutput("银企直联连接失败");
+			log.error("", e);
+		} finally {
+			serverStatusDTO.setStatusStr(isSuccess ? "连接成功" : "连接失败");
+		}
+		return serverStatusDTO;
+	}
+	
+	/**
+	 * 检查SFTP
+	 * @return
+	 */
+	public static ServerStatusDTO checkSFTP() {
+		ServerStatusDTO serverStatusDTO = new ServerStatusDTO();
+		FTPConfig ftpConfig = ConstantConfig.ftpConfig1;
+		serverStatusDTO.setHost(ftpConfig.getHost());
+		serverStatusDTO.setPort(ftpConfig.getPort());
+		SFTPTools ftpTools = new SFTPTools(ftpConfig);
+		boolean isConnected = ftpTools.isConnected();
+		if(isConnected) {
+			ftpTools.logout();
+		}
+		serverStatusDTO.setStatus(isConnected ? 1 : -1);
+		serverStatusDTO.setStatusStr(isConnected ? "连接成功" : "连接失败");
+		serverStatusDTO.setOutput("SFTP");
+		return serverStatusDTO;
 	}
 }
