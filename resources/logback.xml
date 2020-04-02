@@ -7,7 +7,7 @@ debug：当此属性设置为true时，将打印出logback内部日志信息，�
 <configuration>
 	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />  
     <!-- 定义日志文件的存储地址 -->
-    <property name="LOG_DIR" value="C:/dev/logs/ops"/>
+    <property name="LOG_DIR" value="D:/dev/smk/logs/ops"/>
 
     <!--
         %p:输出优先级，即DEBUG,INFO,WARN,ERROR,FATAL

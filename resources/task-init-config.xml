@@ -19,10 +19,11 @@
 	<default-classpath>com.tzrcb.dispatch.core.task</default-classpath>
 	<!--  
 	<task id="TimeTaskDemo" title="定时任务Demo" type="1" startTime="10:56:05" interval="${5s}" />
-	-->
+	
  	
  	<task id="SocketServerForSSTask" title="Socket服务端任务-提供给社保" />
  	
  	<task id="YqzlConfigInitTask" title="银企直连服务配置初始化任务" />
+ 	-->
  	
 </tasks>

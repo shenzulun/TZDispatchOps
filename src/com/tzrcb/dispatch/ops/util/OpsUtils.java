@@ -62,8 +62,8 @@ public class OpsUtils {
 	 */
 	public static List<MenuDTO> getMenus() {
 		List<MenuDTO> menus = new ArrayList<MenuDTO>();
-		menus.add(new MenuDTO(0, "医保报文-交易记录", "/pages/trans_record.html"));
-		menus.add(new MenuDTO(1, "银企直联-交易记录", "/pages/yqzl_trans_record.html"));
+		menus.add(new MenuDTO(0, "市民卡报文-交易记录", "/pages/trans_record.html"));
+//		menus.add(new MenuDTO(1, "银企直联-交易记录", "/pages/yqzl_trans_record.html"));
 		menus.add(new MenuDTO(2, "系统状态", "/pages/system_status.html"));
 //		menus.add(new MenuDTO(3, "模拟报文", "/pages/send_msg.html"));
 		return menus;
